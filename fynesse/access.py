@@ -1,3 +1,4 @@
+from typing import Optional
 import requests
 from .config import *
 
@@ -41,6 +42,15 @@ def download_price_paid_data(year_from: int, year_to: int) -> None:
                     "wb",
                 ) as file:
                     file.write(response.content)
+
+
+def download_open_postcode_geo_data(
+    url: str | None = None, file_name: str | None = None
+) -> str:
+    url = url or "https://www.getthedata.com/downloads/open_postcode_geo.csv.zip"
+    file_name = file_name if file_name is not None else "./opg.csv"
+
+    return file_name
 
 
 def data():
