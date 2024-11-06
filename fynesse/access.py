@@ -18,6 +18,15 @@ def hello_world():
     print("Hello from the data science library!")
 
 
+def download_file(url: str, path: str) -> None:
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(path, "wb") as file:
+            file.write(response.content)
+    else:
+        raise Exception(f"Unable to download: {url}")
+
+
 def download_price_paid_data(year_from: int, year_to: int) -> None:
     # Base URL where the dataset is stored
     base_url = (
@@ -48,7 +57,9 @@ def download_open_postcode_geo_data(
     url: str | None = None, file_name: str | None = None
 ) -> str:
     url = url or "https://www.getthedata.com/downloads/open_postcode_geo.csv.zip"
-    file_name = file_name if file_name is not None else "./opg.csv"
+    file_name = file_name if file_name is not None else "./opg.csv.zip"
+
+    download_file(url, file_name)
 
     return file_name
 
