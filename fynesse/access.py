@@ -1,7 +1,9 @@
 from typing import Optional
+import itertools
 import csv
 import requests
 import pymysql
+import pandas as pd
 
 from .config import *
 
@@ -123,6 +125,26 @@ def housing_upload_join_data(conn, year):
     )
     conn.commit()
     print("Data stored for year: " + str(year))
+
+
+def select_houses_transactions(
+    conn, pp_fields, postcode_fields, min_lat, max_lat, min_long, max_long
+):
+    select = ", ".join(
+        itertools.chain.from_iterable(
+            [f"{prefix}.{f}" for f in fields]
+            for prefix, fields in zip(["pp_data", "pc"], [pp_fields, postcode_fields])
+        )
+    )
+    statement = f"""
+    SELECT {select} FROM pp_data
+    INNER JOIN (
+        SELECT * FROM postcode_data
+        WHERE latitude >= {min_lat} AND latitude <= {max_lat} AND longitude >= {min_long} AND longitude <= {max_long}
+    ) AS pc ON pp_data.postcode = pc.postcode
+    WHERE date_of_transfer >= '2020-01-01'
+    """
+    return pd.read_sql(statement, con=conn)
 
 
 def data():
