@@ -1,4 +1,3 @@
-from typing import Optional
 import itertools
 import zipfile
 import io
@@ -28,6 +27,10 @@ def hello_world():
 
 
 def download_file(url: str, path: str) -> None:
+    if os.path.exists(path) and os.listdir(path):
+        print(f"Files already exist at: {path}.")
+        return
+
     response = requests.get(url)
     if response.status_code == 200:
         with open(path, "wb") as file:
@@ -151,22 +154,50 @@ def select_houses_transactions(
     return pd.read_sql(statement, con=conn)
 
 
-def download_census_data(code, base_dir=""):
-    url = f"https://www.nomisweb.co.uk/output/census/2021/census2021-{code.lower()}.zip"
-    extract_dir = os.path.join(base_dir, os.path.splitext(os.path.basename(url))[0])
-
-    if os.path.exists(extract_dir) and os.listdir(extract_dir):
-        print(f"Files already exist at: {extract_dir}.")
+def download_zip(url: str, path: str) -> None:
+    if os.path.exists(path) and os.listdir(path):
+        print(f"Files already exist at: {path}.")
         return
-
-    os.makedirs(extract_dir, exist_ok=True)
+    os.makedirs(path, exist_ok=True)
     response = requests.get(url)
     response.raise_for_status()
 
     with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
-        zip_ref.extractall(extract_dir)
+        zip_ref.extractall(path)
 
-    print(f"Files extracted to: {extract_dir}")
+    print(f"Files extracted to: {path}")
+
+
+def download_url(url: str, path: str) -> None:
+    if os.path.exists(path) and os.listdir(path):
+        print(f"Files already exist at: {path}.")
+        return
+    # os.makedirs(path, exist_ok=True)
+    response = requests.get(url)
+    response.raise_for_status()
+
+    with open(path, "wb") as file:
+        file.write(reponse.content)
+
+
+def download_census_data(code, base_dir=""):
+    url = f"https://www.nomisweb.co.uk/output/census/2021/census2021-{code.lower()}.zip"
+    extract_dir = os.path.join(base_dir, os.path.splitext(os.path.basename(url))[0])
+
+    download_zip(url, extract_dir)
+
+
+def download_2021_oa_boundaries():
+    url = "https://open-geography-portalx-ons.hub.arcgis.com/api/download/v1/items/6beafcfd9b9c4c9993a06b6b199d7e6d/csv?layers=0"
+
+    path = "oa_boundaries_2021.csv"
+
+    download_file(url, path)
+
+
+def load_2021_oa_boundaries():
+    path = "oa_boundaries_2021.csv"
+    return pd.read_csv(path)
 
 
 def load_census_data(code, level="msoa"):
