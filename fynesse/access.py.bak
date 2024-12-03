@@ -26,19 +26,6 @@ def hello_world():
     print("Hello from the data science library!")
 
 
-def download_file(url: str, path: str) -> None:
-    if os.path.exists(path) and os.listdir(path):
-        print(f"Files already exist at: {path}.")
-        return
-
-    response = requests.get(url)
-    if response.status_code == 200:
-        with open(path, "wb") as file:
-            file.write(response.content)
-    else:
-        raise Exception(f"Unable to download: {url}")
-
-
 def download_price_paid_data(year_from: int, year_to: int) -> None:
     # Base URL where the dataset is stored
     base_url = (
@@ -74,32 +61,6 @@ def download_open_postcode_geo_data(
     download_file(url, file_name)
 
     return file_name
-
-
-def create_connection(user, password, host, database, port=3306):
-    """Create a database connection to the MariaDB database
-        specified by the host url and database name.
-    :param user: username
-    :param password: password
-    :param host: host url
-    :param database: database name
-    :param port: port number
-    :return: Connection object or None
-    """
-    conn = None
-    try:
-        conn = pymysql.connect(
-            user=user,
-            passwd=password,
-            host=host,
-            port=port,
-            local_infile=1,
-            db=database,
-        )
-        print(f"Connection established!")
-    except Exception as e:
-        print(f"Error connecting to the MariaDB Server: {e}")
-    return conn
 
 
 def housing_upload_join_data(conn, year):
@@ -154,56 +115,16 @@ def select_houses_transactions(
     return pd.read_sql(statement, con=conn)
 
 
-def download_zip(url: str, path: str) -> None:
-    if os.path.exists(path) and os.listdir(path):
-        print(f"Files already exist at: {path}.")
-        return
-    os.makedirs(path, exist_ok=True)
-    response = requests.get(url)
-    response.raise_for_status()
-
-    with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
-        zip_ref.extractall(path)
-
-    print(f"Files extracted to: {path}")
-
-
-def download_url(url: str, path: str) -> None:
-    if os.path.exists(path) and os.listdir(path):
-        print(f"Files already exist at: {path}.")
-        return
-    # os.makedirs(path, exist_ok=True)
-    response = requests.get(url)
-    response.raise_for_status()
-
-    with open(path, "wb") as file:
-        file.write(reponse.content)
-
-
-def download_census_data(code, base_dir=""):
-    url = f"https://www.nomisweb.co.uk/output/census/2021/census2021-{code.lower()}.zip"
-    extract_dir = os.path.join(base_dir, os.path.splitext(os.path.basename(url))[0])
-
-    download_zip(url, extract_dir)
-
-
-def download_2021_oa_boundaries():
-    url = "https://open-geography-portalx-ons.hub.arcgis.com/api/download/v1/items/6beafcfd9b9c4c9993a06b6b199d7e6d/csv?layers=0"
-
-    path = "oa_boundaries_2021.csv"
-
-    download_file(url, path)
-
-
-def load_2021_oa_boundaries():
-    path = "oa_boundaries_2021.csv"
-    return pd.read_csv(path)
-
-
-def load_census_data(code, level="msoa"):
-    return pd.read_csv(
-        f"census2021-{code.lower()}/census2021-{code.lower()}-{level}.csv"
-    )
+# def download_url(url: str, path: str) -> None:
+#     if os.path.exists(path) and os.listdir(path):
+#         print(f"Files already exist at: {path}.")
+#         return
+#     # os.makedirs(path, exist_ok=True)
+#     response = requests.get(url)
+#     response.raise_for_status()
+#
+#     with open(path, "wb") as file:
+#         file.write(reponse.content)
 
 
 def data():

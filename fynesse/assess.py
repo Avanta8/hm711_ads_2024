@@ -6,7 +6,6 @@ from sklearn.cluster import KMeans
 from scipy.spatial.distance import pdist, squareform
 
 from .config import *
-
 from . import access
 
 """These are the types of import we might expect in this file
