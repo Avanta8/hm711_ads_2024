@@ -1,12 +1,13 @@
 import pandas as pd
 import pymysql
-from pypika import Column, Query, Table
+# from pypika import Column, Query, Table
 
 from fynesse.access.utils import (
     UploadCsvConfig,
+    check_table_exists,
+    create_separate_table,
     download_file,
     get_download_path,
-    upload_csv,
 )
 
 
@@ -41,8 +42,7 @@ def upload_2021_oa_boundaries(conn: pymysql.Connection, recreate=True):
         recreate=recreate,
         ignore_lines=1,
     )
-
-    upload_csv(conn, config)
+    config.upload(conn)
 
 
 # def upload_2021_oa_boundaries(conn: pymysql.Connection, recreate=True):

@@ -3,11 +3,11 @@ import os
 import pandas as pd
 
 from fynesse import access
-from fynesse.access.utils import UploadCsvConfig, get_download_path, upload_csv
+from fynesse.access.utils import UploadCsvConfig, get_download_path
 
 
 def get_census_2021_download_directory(code: str) -> str:
-    path = f"census2021-{code.lower()}"
+    path = f"census/census2021-{code.lower()}"
     return get_download_path(path)
 
 
@@ -62,5 +62,4 @@ def upload_nssec(conn, level: str):
         recreate=True,
         ignore_lines=1,
     )
-
-    upload_csv(conn, config)
+    config.upload(conn)

@@ -76,23 +76,6 @@ def count_pois_near_coordinates(
     return poi_counts
 
 
-def box_coords(latitude, longitude, distance=1.0):
-    """Returns (min_lat, min_long), (max_lat, max_long)"""
-    lat_rad = math.radians(latitude)
-    long_rad = math.radians(longitude)
-    mlat = 111132.92 - 559.82 * math.cos(2 * lat_rad) + 1.175 * math.cos(4 * lat_rad)
-    mlong = (
-        111412.84 * math.cos(lat_rad)
-        - 93.5 * math.cos(3 * lat_rad)
-        - 0.11 * math.cos(5 * lat_rad)
-    )
-    # mlat = meters per degree
-    # we want degree per meter
-    dlat = 1 / mlat * 1000 / 2 * distance
-    dlong = 1 / mlong * 1000 / 2 * distance
-    return (latitude - dlat, longitude - dlong), (latitude + dlat, longitude + dlong)
-
-
 def get_feature_counts(
     locations_dict: dict[str, tuple[int, int]], tags: dict[str, bool | list[str]]
 ):
