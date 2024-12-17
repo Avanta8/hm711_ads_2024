@@ -1,9 +1,11 @@
+import geopandas as gpd
 import pandas as pd
 from pymysql import Connection
 
 from fynesse.access.utils import (
     UploadCsvConfig,
     download_file,
+    download_zip,
     get_download_path,
     load_table_df,
     normalise_df,
@@ -112,7 +114,7 @@ def normalise_election_df(df: pd.DataFrame, in_place: bool = False) -> pd.DataFr
 
     df.drop(
         columns=[
-            "Country_name",
+            # "Country_name",
             "First_party",
             "Second_party",
             "Electorate",
@@ -181,3 +183,17 @@ def load_join_msoa_to_election_2021(conn: Connection):
 def join_election_census_df(election_df: pd.DataFrame, census_df: pd.DataFrame):
     # return pd.merge(election_df, census_df, left_on="ONS_ID", right_on="PCON25CD")
     return pd.merge(election_df, census_df, left_index=True, right_on="PCON25CD")
+
+
+def download_constituency_geolocation():
+    # https://geoportal.statistics.gov.uk/datasets/ons::westminster-parliamentary-constituencies-july-2024-boundaries-uk-bfc-2/
+    url = "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Westminster_Parliamentary_Constituencies_July_2024_Boundaries_UK_BFC/FeatureServer/replicafilescache/Westminster_Parliamentary_Constituencies_July_2024_Boundaries_UK_BFC_8322311767861589132.zip"
+    path = get_download_path("election/constituency_geolocation")
+    return download_zip(url, path)
+
+
+def load_constituency_geolocation() -> gpd.GeoDataFrame:
+    path = get_download_path(
+        "election/constituency_geolocation/PCON_JULY_2024_UK_BFC.shp"
+    )
+    return gpd.read_file(path)
